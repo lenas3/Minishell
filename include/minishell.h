@@ -42,8 +42,10 @@ typedef struct s_cmd
 typedef struct s_minishell
 {
 	char **env;
+	char *input;
 	int exit_value;
 	t_token *tokens;
+	t_cmd *cmds;
 } t_shell;
 
 #endif
