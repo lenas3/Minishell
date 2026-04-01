@@ -7,9 +7,25 @@
 # include <readline/readline.h>
 # include <readline/history.h>
 
+// int	is_quote_open(char *str);
+char			**ft_split(char const *s, char c); //kullanmıyo olabilirm
+t_token			*new_token(t_token_type type, char *value);
+t_token_type	get_value(char *str, int i);
+t_token 		*get_tokens(char *str);
+int 			pipe_ctrl(char *str, int i);
+char 			**split_to_commands(char *str);
+int 			ft_strlen(char *str);
+char			*ft_strdup(const char *str); //kullanmıyo olabilirm
+char 			*trim(char *str);
+int 			prompt(t_shell *shell); //readline basmalı
+char			*ft_substr(char *str, int start, int len);
+
+//önce WORD'e printable olmayan bir ascii değerini atadık. 
+//sonraki gelenler yapı gereği 2, 3 olarak otomatik artıyor.
+//enum default olarak 0'dan başlar. 0 = NULL çakışması yaşanmasın diye printable olmayan aralıktan başlıyoruz. 
 typedef enum e_token_type
 {
-	WORD,
+	WORD = 1,
 	PIPE,
 	REDIRECT_IN,
 	REDIRECT_OUT,
@@ -27,7 +43,7 @@ typedef struct s_token
 typedef struct s_redirect
 {
 	t_token_type type;
-	char *target_file;
+	char *target;
 	struct s_redirect *next;
 } t_redirect;
 
