@@ -7,19 +7,6 @@
 # include <readline/readline.h>
 # include <readline/history.h>
 
-// int	is_quote_open(char *str);
-char			**ft_split(char const *s, char c); //kullanmıyo olabilirm
-t_token			*new_token(t_token_type type, char *value);
-t_token_type	get_value(char *str, int i);
-t_token 		*get_tokens(char *str);
-int 			pipe_ctrl(char *str, int i);
-char 			**split_to_commands(char *str);
-int 			ft_strlen(char *str);
-char			*ft_strdup(const char *str); //kullanmıyo olabilirm
-char 			*trim(char *str);
-int 			prompt(t_shell *shell); //readline basmalı
-char			*ft_substr(char *str, int start, int len);
-
 //önce WORD'e printable olmayan bir ascii değerini atadık. 
 //sonraki gelenler yapı gereği 2, 3 olarak otomatik artıyor.
 //enum default olarak 0'dan başlar. 0 = NULL çakışması yaşanmasın diye printable olmayan aralıktan başlıyoruz. 
@@ -36,7 +23,7 @@ typedef enum e_token_type
 typedef struct s_token
 {
 	t_token_type type;
-	char *value;
+	char *context;
 	struct s_token *next;
 } t_token;
 	
@@ -63,5 +50,18 @@ typedef struct s_minishell
 	t_token *tokens;
 	t_cmd *cmds;
 } t_shell;
+
+// int	is_quote_open(char *str);
+t_token			*new_token(t_token_type type, char *context);
+t_token_type	get_value(char *str, int *i);
+t_token 		*get_tokens(char *str);
+int 			pipe_ctrl(char *str, int i);
+int 			ft_strlen(char *str);
+char			*ft_strdup(char *str); //kullanmıyo olabilirm
+char 			*trim(char *str);
+int 			prompt(t_shell *shell); //readline basmalı
+char			*ft_substr(char *str, int start, int len);
+t_token 		*get_token_util(char *str, t_token **curr, int *i, char *buff);
+
 
 #endif

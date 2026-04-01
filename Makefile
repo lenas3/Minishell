@@ -1,6 +1,9 @@
 NAME = minishell
 
-SRCS = main.c
+SRCS = main.c \
+		parser/lexer_utils.c \
+		parser/lexer.c \
+		parser/utils.c
 OBJS = $(SRCS:.c=.o)
 
 INCLUDES = -I include
@@ -10,7 +13,7 @@ CFLAGS = -Wall -Wextra -Werror
 all: $(NAME)
 
 $(NAME): $(OBJS)
-	$(CC) $(CFLAGS) -o $(NAME) $(OBJS)
+	$(CC) $(CFLAGS) -lreadline -o $(NAME) $(OBJS)
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@ $(INCLUDES)
