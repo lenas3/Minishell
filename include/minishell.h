@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   minishell.h                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: asay <asay@student.42.fr>                  +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/04/02 22:01:03 by asay              #+#    #+#             */
+/*   Updated: 2026/04/02 22:17:27 by asay             ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef MINISHELL_H
 # define MINISHELL_H
 
@@ -50,6 +62,16 @@ typedef struct s_minishell
 	t_token *tokens;
 	t_cmd *cmds;
 } t_shell;
+
+typedef struct s_lexer
+{
+	int i;
+    int j;
+    char *buff;
+    t_token *head;
+    t_token *curr;
+    t_token_type value;
+} t_lexer;
 
 // int	is_quote_open(char *str);
 t_token			*new_token(t_token_type type, char *context);
