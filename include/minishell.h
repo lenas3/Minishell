@@ -62,6 +62,10 @@ char 			*trim(char *str);
 int 			prompt(t_shell *shell); //readline basmalı
 char			*ft_substr(char *str, int start, int len);
 t_token 		*get_token_util(char *str, t_token **curr, int *i, char *buff);
+char 			**copy_env(char **env);
+int 			sh_init(t_shell *shell, char **env);
+void    		free_str(char **str);
+void			free_sh(t_shell *shell);
 
 
 #endif
