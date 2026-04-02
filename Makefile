@@ -3,7 +3,9 @@ NAME = minishell
 SRCS = main.c \
 		parser/lexer_utils.c \
 		parser/lexer.c \
-		parser/utils.c
+		parser/utils.c \
+		parser/clean.c \
+		parser/init.c
 OBJS = $(SRCS:.c=.o)
 
 INCLUDES = -I include
