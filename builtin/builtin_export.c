@@ -3,18 +3,18 @@
 /*                                                        :::      ::::::::   */
 /*   builtin_export.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zedurak <zedurak@student.42istanbul.com    +#+  +:+       +#+        */
+/*   By: asay <asay@student.42istanbul.com.tr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/25 20:15:57 by zedurak           #+#    #+#             */
-/*   Updated: 2026/05/16 13:02:56 by zedurak          ###   ########.fr       */
+/*   Updated: 2026/06/21 16:06:21 by asay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void handle_append(t_shell *shell, char *key, char *new_val)
+void	handle_append(t_shell *shell, char *key, char *new_val)
 {
-	t_env_node  *node;
+	t_env_node	*node;
 	char		*joined;
 
 	node = shell->env_list;
@@ -24,7 +24,7 @@ void handle_append(t_shell *shell, char *key, char *new_val)
 		{
 			if (node->value && new_val)
 			{
-				joined = ft_strjoin(node->value, new_val); // mevcut + yeni
+				joined = ft_strjoin(node->value, new_val);
 				free(node->value);
 				node->value = joined;
 			}
@@ -37,10 +37,10 @@ void handle_append(t_shell *shell, char *key, char *new_val)
 	create_new_node(shell, key, new_val);
 }
 
-void execute_export(t_shell *shell, char *key, char *value, int i)
+void	execute_export(t_shell *shell, char *key, char *value, int i)
 {
 	if (ft_isappend(shell->cmds->argv[i]))
-		handle_append(shell, key, value);   // += durumu
+		handle_append(shell, key, value);
 	else
 	{
 		if (is_key_inside(key, shell->env_list))
@@ -50,11 +50,10 @@ void execute_export(t_shell *shell, char *key, char *value, int i)
 	}
 }
 
-void only_export_command(t_env_node *env_list)
+void	only_export_command(t_env_node *env_list)
 {
 	t_env_node	*printable_copy;
 	t_env_node	*head;
-
 
 	printable_copy = ft_copy_env_list(env_list);
 	head = printable_copy;
@@ -62,12 +61,11 @@ void only_export_command(t_env_node *env_list)
 	while (printable_copy)
 	{
 		printf("declare -x %s", printable_copy->key);
-		if (printable_copy->value) //env de görünmeyen value değerleri NULL olan değişkenleri de export ile yazdırabilmek için(= olmadan yazılıyorlar)
-			printf("=\"%s\"", printable_copy->value); //value tırnak içinde yazılmalı
+		if (printable_copy->value)
+			printf("=\"%s\"", printable_copy->value);
 		printf("\n");
 		printable_copy = printable_copy->next;
 	}
-	// free the copied list
 	while (head)
 	{
 		printable_copy = head->next;
@@ -82,7 +80,11 @@ int	process_export_arg(t_shell *shell, int i)
 {
 	char	*key;
 	char	*value;
+	char	*arg;
 
+	arg = shell->cmds->argv[i];
+	if (arg[0] == '-' && arg[1] != '\0')
+		return (write(2, "export: invalid option\n", 23), 2);
 	if (is_valid_identifier(shell->cmds->argv[i]))
 		return (write(2, "export: not a valid identifier\n", 31), 1);
 	key = find_key_or_value(shell->cmds->argv[i], 0, KEY);
@@ -98,10 +100,11 @@ int	process_export_arg(t_shell *shell, int i)
 	return (0);
 }
 
-int builtin_export(t_shell *shell, int in_pipe)
+int	builtin_export(t_shell *shell, int in_pipe)
 {
-	int i;
-	int ret;
+	int	i;
+	int	ret;
+	int	status;
 
 	i = 1;
 	(void)in_pipe;
@@ -110,7 +113,10 @@ int builtin_export(t_shell *shell, int in_pipe)
 		return (only_export_command(shell->env_list), 0);
 	while (shell->cmds->argv[i])
 	{
-		if (process_export_arg(shell, i))
+		status = process_export_arg(shell, i);
+		if (status == 2)
+			return (2);
+		if (status == 1)
 			ret = 1;
 		i++;
 	}

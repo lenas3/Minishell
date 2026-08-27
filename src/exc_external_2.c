@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exc_external_2.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zedurak <zedurak@student.42istanbul.com    +#+  +:+       +#+        */
+/*   By: asay <asay@student.42istanbul.com.tr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/06 17:30:29 by zedurak           #+#    #+#             */
-/*   Updated: 2026/06/06 17:44:57 by zedurak          ###   ########.fr       */
+/*   Updated: 2026/06/21 17:59:49 by asay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,18 +54,18 @@ int	is_path_okey(t_shell *shell, char *path)
 {
 	struct stat	st;
 
-	if (access(path, F_OK)) //dosya disk de var mı?
+	if (access(path, F_OK))
 	{
 		print_path_error(shell, path, "command not found", 127);
 		return (1);
 	}
 	stat(path, &st);
-	if (S_ISDIR(st.st_mode)) // Klasör mü, dosya mı?
+	if (S_ISDIR(st.st_mode))
 	{
 		print_path_error(shell, path, "is a directory", 126);
 		return (1);
 	}
-	if (access(path, X_OK)) //çalıştırılabilir mi?
+	if (access(path, X_OK))
 	{
 		print_path_error(shell, path, "Permission denied", 126);
 		return (1);

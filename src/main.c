@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zedurak <zedurak@student.42istanbul.com    +#+  +:+       +#+        */
+/*   By: asay <asay@student.42istanbul.com.tr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/25 13:25:09 by zedurak           #+#    #+#             */
-/*   Updated: 2026/05/16 19:04:17 by zedurak          ###   ########.fr       */
+/*   Updated: 2026/06/21 20:41:50 by asay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,38 +14,21 @@
 
 int	g_signal;
 
-t_cmd	*start_parser(char *input, t_shell *shell)
+static void	execute_input(t_shell *shell)
 {
-	(void)input;
-	(void)shell;
-	return (NULL);
+	shell->cmds = start_parser(shell->input, shell);
+	if (shell->cmds)
+	{
+		shell->pipes.command_count = ft_command_count(shell->cmds);
+		shell->pipes.pipe_count = shell->pipes.command_count - 1;
+		start_execute(shell);
+		ft_free_cmd_list(shell->cmds);
+		shell->cmds = NULL;
+	}
+	free(shell->input);
 }
 
-void start_execute(t_shell *shell)
-{
-	t_cmd *cmd;
-
-	cmd = shell->cmds;
-	if (!cmd || !cmd->argv)
-		return ;
-	/*Burada yapmaya çalıştığım pipe kullanımına göre ayırmak ve kullanılmadığı takdirde builtin ya da external
-	olarak çalıştırılması, ek olarak içeride redirect işlemleri kontrolü de yapılmalıdır.*/
-	if (cmd->next != NULL) //birden fazla cmd varsa pipe var demektir
-		pipe_working(shell); //cmd listesini dolaşarak pipe işlemlerini yapar
-		//en son child içinde en son child in exit kodunu shell->exit_value a yazmak lazım
-		//Bu pipe'ta 3 komut var. Bash'in kuralı: en sondaki komutun exit kodu önemli. ls hata verse bile, wc -l başarılıysa $? = 0 olur.
-	else if (is_builtin(cmd->argv[0], shell)) //cmd tek ise builtin mi diye kontrol eder
-		execute_builtin(cmd->argv[0], shell, 0, 0); //forklamadan built-in komutları çalıştırır. İçeride redirect işlemleri kontrolü yapmayı unutma
-		//builtinler doğru ise 0 dönmeli hatalı ise 1 dönmeli
-	else
-		execute_external(shell, 0); //fork lazımdıır,external komutları çalıştırır. İçeride redirect işlemleri kontrolü yapmayı unutma
-	//!!sondaki else bir şekilde azaltılabilir mi diye düşünüyorum, çünkü cmd tek ise ve builtin değilse zaten external komut oluyor, yani tek if ile de halledilebilir gibi geliyor bana.!!
-	//externallerin nasıl çalıştırıldığını anlayınca tekrar değerlendirilecektir bu durum.!!
-	//execute_external içinde waitpid'den gelen kodu
-	//shell->exit_value'a yazman lazım
-}
-
-void lets_start_shell(t_shell *shell)
+void	lets_start_shell(t_shell *shell)
 {
 	while (1)
 	{
@@ -55,28 +38,15 @@ void lets_start_shell(t_shell *shell)
 			g_signal = 0;
 		}
 		shell->input = readline("minishell> ");
-		if(shell->input == NULL) //crtl+d de readline NULL döner
-		{
-			write(2, "exit\n", 5);
-			rl_clear_history();
-			break ;
-		}
-		if (*shell->input != '\0') //bash de enter a basınca boş inputu kaydetmiyor soo biz de kaydetmiyoruz
+		if (shell->input == NULL)
+			return (write(2, "exit\n", 5), rl_clear_history());
+		if (*shell->input != '\0')
 			add_history(shell->input);
-		shell->cmds = start_parser(shell->input, shell);
-		if (shell->cmds)
-		{
-			shell->pipes.command_count = ft_command_count(shell->cmds);
-			shell->pipes.pipe_count = shell->pipes.command_count - 1;
-			start_execute(shell);
-			ft_free_cmd_list(shell->cmds);
-			shell->cmds = NULL;
-		}
-		free(shell->input);
+		execute_input(shell);
 	}
 }
 
-void works_ctrl_c(int signal)
+void	works_ctrl_c(int signal)
 {
 	g_signal = signal;
 	write(1, "\n", 1);
@@ -85,24 +55,24 @@ void works_ctrl_c(int signal)
 	rl_forced_update_display();
 }
 
-int main(int argc, char **argv, char **envp)
+int	main(int argc, char **argv, char **envp)
 {
-	t_shell *shell;
+	t_shell	*shell;
+
 	(void)argc;
 	(void)argv;
-
 	signal(SIGINT, works_ctrl_c);
 	signal(SIGQUIT, SIG_IGN);
 	shell = malloc(sizeof(t_shell));
 	if (!shell)
-		return (1); 
-	if (!init_shell(shell, envp)) //default değerlerle dolduruldu
+		return (1);
+	if (!init_shell(shell, envp))
 	{
 		write(2, "Initialization failed\n", 22);
 		free(shell);
 		return (1);
 	}
-	lets_start_shell(shell); //repl döngüsü başlatıldı
-	free(shell);
-	return (0);
+	lets_start_shell(shell);
+	free_sh(shell);
+	return (shell->exit_value);
 }

@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   ft_strdup.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zedurak <zedurak@student.42istanbul.com    +#+  +:+       +#+        */
+/*   By: asay <asay@student.42istanbul.com.tr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/29 18:24:01 by zedurak           #+#    #+#             */
-/*   Updated: 2026/04/29 18:26:45 by zedurak          ###   ########.fr       */
+/*   Updated: 2026/06/21 17:26:19 by asay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-char	*ft_strdup(const char *s)
+char	*ft_strdup(char *s)
 {
 	int		len;
 	size_t	i;
@@ -34,9 +34,9 @@ char	*ft_strdup(const char *s)
 	return (a);
 }
 
-char *ft_safe_strdup(char *s)
+char	*ft_safe_strdup(char *s)
 {
-    if (!s)
-        return (NULL);
-    return (ft_strdup(s));
+	if (!s)
+		return (NULL);
+	return (ft_strdup(s));
 }
